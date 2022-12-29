@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MyProject.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221229012359_InitMigration")]
-    partial class InitMigration
+    [Migration("20221229021235_Init_ShowsTable")]
+    partial class InitShowsTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,7 +52,12 @@ namespace MyProject.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("MovieId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("MovieId");
 
                     b.ToTable("Ratings");
                 });
@@ -68,6 +73,22 @@ namespace MyProject.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Shows");
+                });
+
+            modelBuilder.Entity("Rating", b =>
+                {
+                    b.HasOne("Movie", "Movie")
+                        .WithMany("Ratings")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("Movie", b =>
+                {
+                    b.Navigation("Ratings");
                 });
 #pragma warning restore 612, 618
         }
